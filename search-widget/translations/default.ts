@@ -1,0 +1,22 @@
+export default {
+    _widgetLabel: 'API Search Widget',
+    searchPlaceholder: 'Enter search term...',
+    searchButton: 'Search',
+    noResults: 'No results found',
+    tryAdjusting: 'Try adjusting your search terms or filters',
+    showing: 'Showing',
+    of: 'of',
+    resultsFor: 'results for',
+    sortByRelevance: 'Sort by Relevance',
+    sortByTitle: 'Sort by Title',
+    gridView: 'Grid view',
+    listView: 'List view',
+    details: 'Details',
+    openMap: 'Open Map',
+    showMore: 'Show more',
+    showLess: 'Show less',
+    match: 'match',
+    loading: 'Searching...',
+    errorSearching: 'Search failed',
+    enterSearchTerm: 'Please enter a search term'
+};

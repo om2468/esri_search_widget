@@ -1,0 +1,569 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FME Search</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Avenir Next', 'Helvetica Neue', Arial, sans-serif;
+            background: transparent;
+            padding: 20px;
+        }
+
+        .search-container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .search-box {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+        }
+
+        .search-input {
+            flex: 1;
+            padding: 14px 18px;
+            font-size: 16px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            transition: border-color 0.2s, box-shadow 0.2s;
+        }
+
+        .search-input:focus {
+            outline: none;
+            border-color: #0079c1;
+            box-shadow: 0 0 0 3px rgba(0, 121, 193, 0.15);
+        }
+
+        .search-btn {
+            padding: 14px 28px;
+            background: linear-gradient(135deg, #0079c1, #005a8e);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+        }
+
+        .search-btn:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 121, 193, 0.3);
+        }
+
+        .search-btn:disabled {
+            background: #ccc;
+            cursor: not-allowed;
+            transform: none;
+            box-shadow: none;
+        }
+
+        .results-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 16px;
+            padding-bottom: 12px;
+            border-bottom: 1px solid #e0e0e0;
+        }
+
+        .results-count {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .view-toggle {
+            display: flex;
+            gap: 4px;
+        }
+
+        .view-btn {
+            padding: 8px 12px;
+            background: #f5f5f5;
+            border: 1px solid #ddd;
+            cursor: pointer;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+
+        .view-btn:first-child {
+            border-radius: 4px 0 0 4px;
+        }
+
+        .view-btn:last-child {
+            border-radius: 0 4px 4px 0;
+        }
+
+        .view-btn.active {
+            background: #0079c1;
+            color: white;
+            border-color: #0079c1;
+        }
+
+        .results {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 20px;
+        }
+
+        .results.list-view {
+            grid-template-columns: 1fr;
+        }
+
+        .result-card {
+            background: white;
+            border: 1px solid #e0e0e0;
+            border-radius: 12px;
+            overflow: hidden;
+            transition: box-shadow 0.3s, transform 0.3s;
+        }
+
+        .result-card:hover {
+            box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
+            transform: translateY(-4px);
+        }
+
+        .results.list-view .result-card {
+            display: flex;
+            flex-direction: row;
+        }
+
+        .card-thumbnail {
+            height: 180px;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results.list-view .card-thumbnail {
+            width: 220px;
+            height: auto;
+            min-height: 160px;
+            flex-shrink: 0;
+        }
+
+        .card-thumbnail img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .card-thumbnail-icon {
+            font-size: 56px;
+            color: rgba(255, 255, 255, 0.8);
+        }
+
+        .card-type-badge {
+            position: absolute;
+            top: 12px;
+            left: 12px;
+            background: rgba(0, 0, 0, 0.75);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            text-transform: uppercase;
+            font-weight: 600;
+            letter-spacing: 0.5px;
+        }
+
+        .card-score-badge {
+            position: absolute;
+            top: 12px;
+            right: 12px;
+            background: linear-gradient(135deg, #10b981, #059669);
+            color: white;
+            padding: 5px 10px;
+            border-radius: 6px;
+            font-size: 11px;
+            font-weight: 700;
+        }
+
+        .card-content {
+            padding: 20px;
+        }
+
+        .card-title {
+            font-size: 17px;
+            font-weight: 600;
+            margin: 0 0 10px 0;
+            color: #1a1a1a;
+            line-height: 1.4;
+        }
+
+        .card-title a {
+            color: inherit;
+            text-decoration: none;
+            transition: color 0.2s;
+        }
+
+        .card-title a:hover {
+            color: #0079c1;
+        }
+
+        .card-description {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.6;
+            margin-bottom: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+
+        .card-tags {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 8px;
+            margin-bottom: 16px;
+        }
+
+        .tag {
+            background: #e8f4fc;
+            color: #0079c1;
+            padding: 4px 10px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 500;
+        }
+
+        .card-actions {
+            display: flex;
+            gap: 10px;
+            padding-top: 16px;
+            border-top: 1px solid #f0f0f0;
+        }
+
+        .action-btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 6px;
+            padding: 10px 16px;
+            border: 1px solid #ddd;
+            border-radius: 6px;
+            background: white;
+            color: #333;
+            text-decoration: none;
+            font-size: 13px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+
+        .action-btn:hover {
+            background: #f5f5f5;
+            border-color: #0079c1;
+            color: #0079c1;
+        }
+
+        .action-btn.primary {
+            background: linear-gradient(135deg, #0079c1, #005a8e);
+            border-color: transparent;
+            color: white;
+        }
+
+        .action-btn.primary:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0, 121, 193, 0.3);
+        }
+
+        .loading {
+            display: none;
+            text-align: center;
+            padding: 60px 20px;
+        }
+
+        .spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #f0f0f0;
+            border-top-color: #0079c1;
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        .empty {
+            display: none;
+            text-align: center;
+            padding: 80px 20px;
+            color: #666;
+        }
+
+        .empty-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+        }
+
+        .empty h3 {
+            margin: 0 0 8px;
+            color: #333;
+            font-size: 20px;
+        }
+
+        .error {
+            display: none;
+            padding: 16px 20px;
+            background: #fee2e2;
+            border: 1px solid #fca5a5;
+            border-radius: 8px;
+            color: #dc2626;
+            margin-bottom: 20px;
+        }
+
+        .initial-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #666;
+        }
+
+        .initial-state-icon {
+            font-size: 64px;
+            margin-bottom: 16px;
+            opacity: 0.6;
+        }
+
+        .initial-state h3 {
+            margin: 0 0 8px;
+            color: #333;
+            font-size: 20px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="search-container">
+        <div class="search-box">
+            <input type="text" class="search-input" id="searchInput" placeholder="Search for datasets, maps, layers...">
+            <button class="search-btn" id="searchBtn">Search</button>
+        </div>
+
+        <div class="error" id="error"></div>
+
+        <div class="loading" id="loading">
+            <div class="spinner"></div>
+            <p>Searching...</p>
+        </div>
+
+        <div class="results-header" id="resultsHeader" style="display: none;">
+            <div class="results-count" id="resultsCount"></div>
+            <div class="view-toggle" id="viewToggle">
+                <button class="view-btn active" data-view="grid">▦ Grid</button>
+                <button class="view-btn" data-view="list">☰ List</button>
+            </div>
+        </div>
+
+        <div class="results" id="results"></div>
+
+        <div class="empty" id="empty">
+            <div class="empty-icon">🔍</div>
+            <h3>No Results Found</h3>
+            <p>Try adjusting your search terms</p>
+        </div>
+
+        <div class="initial-state" id="initialState">
+            <div class="initial-state-icon">🗺️</div>
+            <h3>Search Our Catalog</h3>
+            <p>Enter a search term above to find datasets, maps, and more</p>
+        </div>
+    </div>
+
+    <script>
+        // Configuration
+        const CONFIG = {
+            API_URL: 'https://fme-docker.tensing.app:443/fmedatastreaming/embeddings/search.fmw',
+            TOKEN: '067e63151ac94654d38a7c5d23832396073317cb'
+        };
+
+        // DOM Elements
+        const searchInput = document.getElementById('searchInput');
+        const searchBtn = document.getElementById('searchBtn');
+        const resultsContainer = document.getElementById('results');
+        const resultsHeader = document.getElementById('resultsHeader');
+        const resultsCount = document.getElementById('resultsCount');
+        const loadingEl = document.getElementById('loading');
+        const emptyEl = document.getElementById('empty');
+        const errorEl = document.getElementById('error');
+        const viewToggle = document.getElementById('viewToggle');
+        const initialState = document.getElementById('initialState');
+
+        // State
+        let currentView = 'grid';
+        let hasSearched = false;
+
+        // Helper functions
+        function parseTags(tags) {
+            if (!tags) return [];
+            if (Array.isArray(tags)) return tags;
+            return tags.split(',').map(t => t.trim()).filter(t => t);
+        }
+
+        function showLoading(show) {
+            loadingEl.style.display = show ? 'block' : 'none';
+            resultsContainer.style.display = show ? 'none' : 'grid';
+            resultsHeader.style.display = show ? 'none' : 'flex';
+            if (show) {
+                initialState.style.display = 'none';
+                emptyEl.style.display = 'none';
+            }
+        }
+
+        function showError(message) {
+            errorEl.textContent = message;
+            errorEl.style.display = message ? 'block' : 'none';
+        }
+
+        function showEmpty(show) {
+            emptyEl.style.display = show ? 'block' : 'none';
+            resultsHeader.style.display = show ? 'none' : 'flex';
+            initialState.style.display = 'none';
+        }
+
+        function renderCard(item) {
+            const title = item.title || item.name || 'Untitled';
+            const description = item.description || item.snippet || '';
+            const type = item.type || 'Layer';
+            const tags = parseTags(item.tags);
+            const thumbnail = item.thumbnail;
+            const score = item.rrf_score || item.similarity || item.score;
+            const prettyUrl = item.prettyurl || item.url;
+            const mapUrl = item.mapurl;
+
+            const card = document.createElement('div');
+            card.className = 'result-card';
+
+            card.innerHTML = `
+        <div class="card-thumbnail">
+          ${thumbnail ? `<img src="${thumbnail}" alt="${title}" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">` : ''}
+          <div class="card-thumbnail-icon" style="${thumbnail ? 'display:none' : ''}">📍</div>
+          <span class="card-type-badge">${type}</span>
+          ${score ? `<span class="card-score-badge">${(parseFloat(score) * 100).toFixed(1)}%</span>` : ''}
+        </div>
+        <div class="card-content">
+          <h3 class="card-title">
+            ${prettyUrl ? `<a href="${prettyUrl}" target="_blank">${title}</a>` : title}
+          </h3>
+          <p class="card-description">${description}</p>
+          ${tags.length > 0 ? `
+            <div class="card-tags">
+              ${tags.slice(0, 4).map(t => `<span class="tag">${t}</span>`).join('')}
+              ${tags.length > 4 ? `<span class="tag">+${tags.length - 4}</span>` : ''}
+            </div>
+          ` : ''}
+          <div class="card-actions">
+            ${prettyUrl ? `<a href="${prettyUrl}" target="_blank" class="action-btn">ℹ️ Details</a>` : ''}
+            ${mapUrl ? `<a href="${mapUrl}" target="_blank" class="action-btn primary">🗺️ Open Map</a>` : ''}
+          </div>
+        </div>
+      `;
+
+            return card;
+        }
+
+        async function performSearch() {
+            const query = searchInput.value.trim();
+            if (!query) {
+                showError('Please enter a search term');
+                return;
+            }
+
+            hasSearched = true;
+            showError('');
+            showEmpty(false);
+            showLoading(true);
+            searchBtn.disabled = true;
+            searchBtn.textContent = 'Searching...';
+
+            try {
+                const params = new URLSearchParams({
+                    search_term: query,
+                    token: CONFIG.TOKEN
+                });
+
+                const response = await fetch(`${CONFIG.API_URL}?${params.toString()}`, {
+                    method: 'GET',
+                    headers: { 'Accept': 'application/json' }
+                });
+
+                if (!response.ok) {
+                    throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                }
+
+                const text = await response.text();
+                let data;
+
+                try {
+                    data = JSON.parse(text);
+                } catch {
+                    const lines = text.trim().split('\n').filter(line => line.trim());
+                    data = lines.map(line => JSON.parse(line));
+                }
+
+                const results = Array.isArray(data) ? data : [data];
+
+                showLoading(false);
+
+                if (results.length === 0) {
+                    showEmpty(true);
+                    return;
+                }
+
+                resultsContainer.innerHTML = '';
+                results.forEach(item => {
+                    resultsContainer.appendChild(renderCard(item));
+                });
+
+                resultsCount.innerHTML = `Found <strong>${results.length}</strong> results for "<strong>${query}</strong>"`;
+                resultsHeader.style.display = 'flex';
+
+            } catch (error) {
+                console.error('Search error:', error);
+                showLoading(false);
+                showError(`Search failed: ${error.message}`);
+            } finally {
+                searchBtn.disabled = false;
+                searchBtn.textContent = 'Search';
+            }
+        }
+
+        // Event Listeners
+        searchBtn.addEventListener('click', performSearch);
+
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                performSearch();
+            }
+        });
+
+        viewToggle.addEventListener('click', (e) => {
+            if (e.target.classList.contains('view-btn')) {
+                viewToggle.querySelectorAll('.view-btn').forEach(btn => btn.classList.remove('active'));
+                e.target.classList.add('active');
+                currentView = e.target.dataset.view;
+                resultsContainer.className = 'results' + (currentView === 'list' ? ' list-view' : '');
+            }
+        });
+    </script>
+</body>
+
+</html>
