@@ -37,7 +37,7 @@ const getStyle = () => css`
   .search-widget-lite {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
     padding: 12px 16px;
     background: #fff;
     border-radius: 8px;
@@ -47,11 +47,13 @@ const getStyle = () => css`
 
   .search-input {
     flex: 1;
-    padding: 10px 14px;
+    height: 44px;
+    padding: 0 16px;
     border: 1px solid #ccc;
-    border-radius: 4px;
-    font-size: 14px;
-    min-width: 0;
+    border-radius: 6px;
+    font-size: 16px;
+    min-width: 300px;
+    box-sizing: border-box;
   }
 
   .search-input:focus {
@@ -61,15 +63,17 @@ const getStyle = () => css`
   }
 
   .search-btn {
-    padding: 10px 20px;
+    height: 44px;
+    padding: 0 24px;
     background: #0079c1;
     color: white;
     border: none;
-    border-radius: 4px;
+    border-radius: 6px;
     cursor: pointer;
-    font-size: 14px;
+    font-size: 16px;
     font-weight: 500;
     white-space: nowrap;
+    box-sizing: border-box;
   }
 
   .search-btn:hover {
@@ -82,9 +86,10 @@ const getStyle = () => css`
   }
 
   .status-text {
-    font-size: 12px;
+    font-size: 14px;
     color: #666;
     white-space: nowrap;
+    margin-left: 8px;
   }
 
   .status-text.error {
@@ -215,27 +220,40 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
             // Log data source schema
             const schema = outputDs.getSchema?.();
             console.log('DataSource schema:', schema);
-            console.log('DataSource schema fields:', schema?.fields);
+            if (schema?.fields) {
+                const fieldNames = Object.keys(schema.fields);
+                console.log('Schema field names:', fieldNames);
+                console.log('First schema field:', schema.fields[fieldNames[0]]);
+            }
 
             // Try setSourceRecords with built records
             if (typeof outputDs.buildRecord === 'function') {
+                // Pass features with attributes directly
                 const records = features.map(f => outputDs.buildRecord(f));
                 console.log('Built records count:', records.length);
 
                 // Log first record details
                 const firstRecord = records[0];
-                console.log('First record type:', typeof firstRecord);
                 console.log('First record:', firstRecord);
-                console.log('First record getData:', firstRecord?.getData?.());
-                console.log('First record getFieldValue title:', firstRecord?.getFieldValue?.('title'));
-                console.log('First record getFieldValue url:', firstRecord?.getFieldValue?.('url'));
+
+                // Check what properties the record actually has
+                if (firstRecord) {
+                    console.log('Record keys:', Object.keys(firstRecord));
+                    console.log('Record.feature:', firstRecord.feature);
+                    if (firstRecord.feature) {
+                        console.log('Record.feature.attributes:', firstRecord.feature.attributes);
+                    }
+                    // Try accessing data directly
+                    console.log('Record._data:', firstRecord._data);
+                    console.log('Record.data:', firstRecord.data);
+                }
 
                 if (typeof outputDs.setSourceRecords === 'function') {
                     outputDs.setSourceRecords(records);
                     console.log('Called setSourceRecords');
                 }
             } else {
-                console.warn('buildRecord not available, trying setSourceRecords with raw data');
+                console.warn('buildRecord not available');
             }
 
             // Set status to Unloaded so consuming widgets know data is ready
@@ -284,7 +302,7 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
                 </button>
                 {error && <span className="status-text error">{error}</span>}
                 {!error && resultCount > 0 && (
-                    <span className="status-text success">{resultCount} results</span>
+                    <span className="status-text success">{resultCount} results returned</span>
                 )}
             </div>
         );

@@ -5,22 +5,101 @@ import { TextInput } from 'jimu-ui';
 import { SettingSection, SettingRow } from 'jimu-ui/advanced/setting-components';
 import { IMConfig } from '../../config';
 
-// Schema for the output data source - matches FME API response fields
+// Schema for the output data source - using object format with jimuName for proper field mapping
 const OUTPUT_DS_SCHEMA = {
+    idField: 'objectid',
     fields: {
-        objectid: { name: 'objectid', alias: 'objectid', type: 'esriFieldTypeOID' },
-        id: { name: 'id', alias: 'id', type: 'esriFieldTypeString', length: 50 },
-        title: { name: 'title', alias: 'title', type: 'esriFieldTypeString', length: 255 },
-        name: { name: 'name', alias: 'name', type: 'esriFieldTypeString', length: 255 },
-        description: { name: 'description', alias: 'description', type: 'esriFieldTypeString', length: 2000 },
-        type: { name: 'type', alias: 'type', type: 'esriFieldTypeString', length: 100 },
-        tags: { name: 'tags', alias: 'tags', type: 'esriFieldTypeString', length: 500 },
-        thumbnail: { name: 'thumbnail', alias: 'thumbnail', type: 'esriFieldTypeString', length: 500 },
-        rrf_score: { name: 'rrf_score', alias: 'rrf_score', type: 'esriFieldTypeDouble' },
-        score: { name: 'score', alias: 'score', type: 'esriFieldTypeDouble' },
-        prettyurl: { name: 'prettyurl', alias: 'prettyurl', type: 'esriFieldTypeString', length: 500 },
-        mapurl: { name: 'mapurl', alias: 'mapurl', type: 'esriFieldTypeString', length: 500 },
-        url: { name: 'url', alias: 'url', type: 'esriFieldTypeString', length: 500 }
+        objectid: {
+            jimuName: 'objectid',
+            name: 'objectid',
+            alias: 'objectid',
+            type: 'NUMBER',
+            esriType: 'esriFieldTypeOID'
+        },
+        id: {
+            jimuName: 'id',
+            name: 'id',
+            alias: 'id',
+            type: 'STRING',
+            esriType: 'esriFieldTypeString'
+        },
+        title: {
+            jimuName: 'title',
+            name: 'title',
+            alias: 'title',
+            type: 'STRING',
+            esriType: 'esriFieldTypeString'
+        },
+        name: {
+            jimuName: 'name',
+            name: 'name',
+            alias: 'name',
+            type: 'STRING',
+            esriType: 'esriFieldTypeString'
+        },
+        description: {
+            jimuName: 'description',
+            name: 'description',
+            alias: 'description',
+            type: 'STRING',
+            esriType: 'esriFieldTypeString'
+        },
+        type: {
+            jimuName: 'type',
+            name: 'type',
+            alias: 'type',
+            type: 'STRING',
+            esriType: 'esriFieldTypeString'
+        },
+        tags: {
+            jimuName: 'tags',
+            name: 'tags',
+            alias: 'tags',
+            type: 'STRING',
+            esriType: 'esriFieldTypeString'
+        },
+        thumbnail: {
+            jimuName: 'thumbnail',
+            name: 'thumbnail',
+            alias: 'thumbnail',
+            type: 'STRING',
+            esriType: 'esriFieldTypeString'
+        },
+        rrf_score: {
+            jimuName: 'rrf_score',
+            name: 'rrf_score',
+            alias: 'rrf_score',
+            type: 'NUMBER',
+            esriType: 'esriFieldTypeDouble'
+        },
+        score: {
+            jimuName: 'score',
+            name: 'score',
+            alias: 'score',
+            type: 'NUMBER',
+            esriType: 'esriFieldTypeDouble'
+        },
+        prettyurl: {
+            jimuName: 'prettyurl',
+            name: 'prettyurl',
+            alias: 'prettyurl',
+            type: 'STRING',
+            esriType: 'esriFieldTypeString'
+        },
+        mapurl: {
+            jimuName: 'mapurl',
+            name: 'mapurl',
+            alias: 'mapurl',
+            type: 'STRING',
+            esriType: 'esriFieldTypeString'
+        },
+        url: {
+            jimuName: 'url',
+            name: 'url',
+            alias: 'url',
+            type: 'STRING',
+            esriType: 'esriFieldTypeString'
+        }
     }
 };
 
