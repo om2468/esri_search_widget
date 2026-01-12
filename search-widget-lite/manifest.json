@@ -1,0 +1,25 @@
+{
+    "name": "search-widget-lite",
+    "label": "Search Widget Lite v0.6",
+    "type": "widget",
+    "version": "0.6.0",
+    "exbVersion": "1.19.0",
+    "author": "Custom",
+    "description": "A minimal search widget that publishes results via Output Data Source for native widget consumption",
+    "copyright": "",
+    "license": "Apache-2.0",
+    "properties": {
+        "hasSettingPage": true,
+        "canGenerateMultipleOutputDataSources": false
+    },
+    "publishMessages": [
+        "DATA_RECORDS_SELECTION_CHANGE"
+    ],
+    "translatedLocales": [
+        "en"
+    ],
+    "defaultSize": {
+        "width": 400,
+        "height": 80
+    }
+}

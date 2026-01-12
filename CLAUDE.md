@@ -202,9 +202,92 @@ An alternative approach using JavaScript injection in Hub Text cards. See `hub-i
 
 ---
 
+## Approach 3: Search Widget Lite (Output Data Source)
+
+A minimal search widget (`search-widget-lite/`) that publishes results via **Output Data Source** for consumption by native Experience Builder widgets.
+
+### Key Files
+
+```
+search-widget-lite/
+├── manifest.json              # Widget metadata with publishMessages
+├── config.ts                  # API configuration interface
+├── src/
+│   ├── runtime/
+│   │   └── widget.tsx         # Minimal search UI (~100 lines)
+│   └── setting/
+│       └── setting.tsx        # Settings page + Output DS creation
+└── translations/
+    └── default.ts             # i18n strings
+```
+
+### How It Works
+
+1. **Widget publishes to Output Data Source** after search:
+```tsx
+const outputDs = DataSourceManager.getInstance()
+  .getDataSource(this.props.outputDataSources?.[0]);
+
+outputDs.setSourceRecords(records);
+outputDs.setStatus(DataSourceStatus.Unloaded);
+```
+
+2. **Native widgets connect** to the output data source in their settings
+3. **Widget-to-widget actions** work automatically (List → Map zoom, etc.)
+
+### Integration Steps
+
+1. **Copy widget to Experience Builder**:
+   ```bash
+   cp -r search-widget-lite ~/arcgis-experience-builder-1.19/client/your-extensions/widgets/
+   ```
+
+2. **Restart client** (webpack needs to compile new widget)
+
+3. **Add widget to experience**:
+   - Drag "Search Widget Lite" from Custom widgets
+   - Configure API settings in widget panel
+
+4. **Add native List widget**:
+   - In Data section, select "Search Widget Lite Output" as data source
+   - Configure which fields to display (title, description, etc.)
+
+5. **Configure actions** (optional):
+   - List widget → Settings → Actions
+   - "Record selection changes" → Map widget "Zoom to"
+
+### Output Data Source Schema
+
+| Field | Type | Description |
+|-------|------|-------------|
+| `objectid` | OID | Unique record ID |
+| `title` | String | Result title |
+| `description` | String | Result snippet |
+| `type` | String | Layer/item type |
+| `thumbnail` | String | Thumbnail URL |
+| `rrf_score` | Double | Relevance score (0-1) |
+| `prettyurl` | String | Detail page URL |
+| `mapurl` | String | Map viewer URL |
+
+### Comparison: Full Widget vs Lite Widget
+
+| Aspect | search-widget (Full) | search-widget-lite |
+|--------|---------------------|-------------------|
+| Lines of code | 842 | ~220 |
+| UI Components | Cards, pagination, sorting | Search bar only |
+| Result display | Built-in | Native List/Table widget |
+| Customization | Code changes required | Configure native widgets |
+| Forward compatibility | Manual updates needed | Esri updates widgets |
+| Widget-to-widget actions | Custom implementation | Native support |
+
+---
+
 ## Useful Resources
 
 - [Installation Guide](https://developers.arcgis.com/experience-builder/guide/install-guide/)
 - [Widget Development Guide](https://developers.arcgis.com/experience-builder/guide/getting-started-widget/)
 - [Widget Manifest Reference](https://developers.arcgis.com/experience-builder/guide/widget-manifest/)
 - [Sample Widgets](https://github.com/esri/arcgis-experience-builder-sdk-resources)
+- [Output Data Sources](https://developers.arcgis.com/experience-builder/guide/core-concepts/data-source/#widget-output-data-sources)
+- [Message Actions](https://developers.arcgis.com/experience-builder/guide/core-concepts/message-action/)
+

@@ -1,0 +1,4 @@
+{
+    "apiUrl": "https://fme-docker.tensing.app:443/fmedatastreaming/embeddings/search.fmw",
+    "apiToken": ""
+}
