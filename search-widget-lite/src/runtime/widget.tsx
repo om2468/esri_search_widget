@@ -206,20 +206,36 @@ export default class Widget extends React.PureComponent<AllWidgetProps<IMConfig>
             }
         }));
 
-        console.log('Prepared features:', features.length);
-        console.log('First feature:', features[0]);
+        console.log('=== FEATURE DETAILS ===');
+        console.log('First feature attributes:', JSON.stringify(features[0]?.attributes, null, 2));
+        console.log('Title field value:', features[0]?.attributes?.title);
+        console.log('URL field value:', features[0]?.attributes?.url);
 
         try {
-            // Try setSourceRecords with built records first
+            // Log data source schema
+            const schema = outputDs.getSchema?.();
+            console.log('DataSource schema:', schema);
+            console.log('DataSource schema fields:', schema?.fields);
+
+            // Try setSourceRecords with built records
             if (typeof outputDs.buildRecord === 'function') {
                 const records = features.map(f => outputDs.buildRecord(f));
-                console.log('Built records:', records.length);
-                console.log('First record:', records[0]);
+                console.log('Built records count:', records.length);
+
+                // Log first record details
+                const firstRecord = records[0];
+                console.log('First record type:', typeof firstRecord);
+                console.log('First record:', firstRecord);
+                console.log('First record getData:', firstRecord?.getData?.());
+                console.log('First record getFieldValue title:', firstRecord?.getFieldValue?.('title'));
+                console.log('First record getFieldValue url:', firstRecord?.getFieldValue?.('url'));
 
                 if (typeof outputDs.setSourceRecords === 'function') {
                     outputDs.setSourceRecords(records);
                     console.log('Called setSourceRecords');
                 }
+            } else {
+                console.warn('buildRecord not available, trying setSourceRecords with raw data');
             }
 
             // Set status to Unloaded so consuming widgets know data is ready

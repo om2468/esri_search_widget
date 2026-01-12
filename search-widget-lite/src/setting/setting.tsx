@@ -8,19 +8,19 @@ import { IMConfig } from '../../config';
 // Schema for the output data source - matches FME API response fields
 const OUTPUT_DS_SCHEMA = {
     fields: {
-        objectid: { name: 'objectid', alias: 'Object ID', type: 'esriFieldTypeOID' },
-        id: { name: 'id', alias: 'Item ID', type: 'esriFieldTypeString', length: 50 },
-        title: { name: 'title', alias: 'Title', type: 'esriFieldTypeString', length: 255 },
-        name: { name: 'name', alias: 'Service Name', type: 'esriFieldTypeString', length: 255 },
-        description: { name: 'description', alias: 'Description', type: 'esriFieldTypeString', length: 2000 },
-        type: { name: 'type', alias: 'Type', type: 'esriFieldTypeString', length: 100 },
-        tags: { name: 'tags', alias: 'Tags', type: 'esriFieldTypeString', length: 500 },
-        thumbnail: { name: 'thumbnail', alias: 'Thumbnail URL', type: 'esriFieldTypeString', length: 500 },
-        rrf_score: { name: 'rrf_score', alias: 'Relevance Score', type: 'esriFieldTypeDouble' },
-        score: { name: 'score', alias: 'Score Percent', type: 'esriFieldTypeDouble' },
-        prettyurl: { name: 'prettyurl', alias: 'Detail URL', type: 'esriFieldTypeString', length: 500 },
-        mapurl: { name: 'mapurl', alias: 'Map URL', type: 'esriFieldTypeString', length: 500 },
-        url: { name: 'url', alias: 'Service URL', type: 'esriFieldTypeString', length: 500 }
+        objectid: { name: 'objectid', alias: 'objectid', type: 'esriFieldTypeOID' },
+        id: { name: 'id', alias: 'id', type: 'esriFieldTypeString', length: 50 },
+        title: { name: 'title', alias: 'title', type: 'esriFieldTypeString', length: 255 },
+        name: { name: 'name', alias: 'name', type: 'esriFieldTypeString', length: 255 },
+        description: { name: 'description', alias: 'description', type: 'esriFieldTypeString', length: 2000 },
+        type: { name: 'type', alias: 'type', type: 'esriFieldTypeString', length: 100 },
+        tags: { name: 'tags', alias: 'tags', type: 'esriFieldTypeString', length: 500 },
+        thumbnail: { name: 'thumbnail', alias: 'thumbnail', type: 'esriFieldTypeString', length: 500 },
+        rrf_score: { name: 'rrf_score', alias: 'rrf_score', type: 'esriFieldTypeDouble' },
+        score: { name: 'score', alias: 'score', type: 'esriFieldTypeDouble' },
+        prettyurl: { name: 'prettyurl', alias: 'prettyurl', type: 'esriFieldTypeString', length: 500 },
+        mapurl: { name: 'mapurl', alias: 'mapurl', type: 'esriFieldTypeString', length: 500 },
+        url: { name: 'url', alias: 'url', type: 'esriFieldTypeString', length: 500 }
     }
 };
 
